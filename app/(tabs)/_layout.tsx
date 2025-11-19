@@ -9,6 +9,8 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen name="index" />
+      <Tabs.Screen name="login" />
+      <Tabs.Screen name="otp" />
       <Tabs.Screen name="entry" />
     </Tabs>
   );
