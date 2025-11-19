@@ -27,23 +27,25 @@ export default function RoleSelector({ selectedRole, onSelectRole }: RoleSelecto
           <TouchableOpacity
             key={role.id}
             onPress={() => onSelectRole(role.id)}
-            activeOpacity={0.6}
+            activeOpacity={0.7}
+            style={styles.chipTouchable}
           >
             <MotiView
               animate={{
-                backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.04)',
-                borderColor: isSelected ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.08)',
+                backgroundColor: isSelected ? 'rgba(183, 148, 246, 0.12)' : 'rgba(255, 255, 255, 0.03)',
+                borderColor: isSelected ? 'rgba(183, 148, 246, 0.4)' : 'rgba(255, 255, 255, 0.08)',
+                scale: isSelected ? 1 : 1,
               }}
               transition={{
                 type: 'timing',
-                duration: 200,
+                duration: 250,
               }}
               style={styles.chip}
             >
               <Icon
-                size={16}
-                color={isSelected ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.4)'}
-                strokeWidth={2}
+                size={15}
+                color={isSelected ? '#b794f6' : 'rgba(255, 255, 255, 0.4)'}
+                strokeWidth={1.8}
               />
               <Text style={[styles.chipText, isSelected && styles.chipTextSelected]}>
                 {role.label}
@@ -60,25 +62,30 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     gap: 10,
-    marginBottom: 32,
+    marginBottom: 28,
+    justifyContent: 'center',
+  },
+  chipTouchable: {
+    flex: 1,
   },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 6,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 14,
     borderWidth: 1,
   },
   chipText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500',
     color: 'rgba(255, 255, 255, 0.5)',
-    letterSpacing: -0.2,
+    letterSpacing: -0.3,
   },
   chipTextSelected: {
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: '#b794f6',
     fontWeight: '600',
   },
 });

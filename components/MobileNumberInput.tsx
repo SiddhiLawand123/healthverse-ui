@@ -23,20 +23,21 @@ export default function MobileNumberInput({ value, onChangeText, error, onSubmit
           borderColor: error
             ? 'rgba(255, 107, 107, 0.6)'
             : isFocused
-            ? 'rgba(255, 255, 255, 0.2)'
+            ? 'rgba(183, 148, 246, 0.4)'
             : 'rgba(255, 255, 255, 0.08)',
+          shadowOpacity: isFocused ? 0.2 : 0,
         }}
         transition={{
           type: 'timing',
-          duration: 200,
+          duration: 250,
         }}
-        style={styles.inputContainer}
+        style={[styles.inputContainer, isFocused && styles.inputFocused]}
       >
         <View style={styles.iconWrapper}>
           <Phone
             size={18}
-            color={isFocused || hasValue ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.3)'}
-            strokeWidth={2}
+            color={isFocused ? '#b794f6' : hasValue ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.3)'}
+            strokeWidth={1.8}
           />
         </View>
 
@@ -48,13 +49,14 @@ export default function MobileNumberInput({ value, onChangeText, error, onSubmit
             }}
             transition={{
               type: 'timing',
-              duration: 200,
+              duration: 250,
             }}
             style={styles.labelContainer}
           >
             <Text style={[
               styles.label,
               (hasValue || isFocused) && styles.labelFloating,
+              isFocused && styles.labelFocused,
             ]}>
               Mobile Number
             </Text>
@@ -72,18 +74,19 @@ export default function MobileNumberInput({ value, onChangeText, error, onSubmit
               onBlur={() => setIsFocused(false)}
               onSubmitEditing={onSubmit}
               returnKeyType="done"
-              selectionColor="rgba(255, 255, 255, 0.3)"
+              selectionColor="rgba(183, 148, 246, 0.5)"
             />
           </View>
         </View>
 
         {isValid && (
           <MotiView
-            from={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+            from={{ scale: 0, opacity: 0, rotate: '-45deg' }}
+            animate={{ scale: 1, opacity: 1, rotate: '0deg' }}
             transition={{
-              type: 'timing',
-              duration: 200,
+              type: 'spring',
+              damping: 12,
+              stiffness: 150,
             }}
             style={styles.checkmark}
           >
@@ -119,12 +122,20 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
-    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 18,
     borderWidth: 1,
     paddingHorizontal: 20,
     paddingVertical: 20,
-    minHeight: 64,
+    minHeight: 66,
+    shadowColor: '#b794f6',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0,
+    shadowRadius: 8,
+    elevation: 0,
+  },
+  inputFocused: {
+    elevation: 4,
   },
   iconWrapper: {
     marginRight: 16,
@@ -147,6 +158,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
     color: 'rgba(255, 255, 255, 0.5)',
+  },
+  labelFocused: {
+    color: '#b794f6',
   },
   inputRow: {
     flexDirection: 'row',
@@ -171,19 +185,19 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   checkmarkCircle: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: 'rgba(52, 199, 89, 0.15)',
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: 'rgba(138, 202, 160, 0.15)',
     borderWidth: 1.5,
-    borderColor: 'rgba(52, 199, 89, 0.8)',
+    borderColor: 'rgba(138, 202, 160, 0.8)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   checkmarkText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
-    color: 'rgba(52, 199, 89, 1)',
+    color: 'rgba(138, 202, 160, 1)',
   },
   errorContainer: {
     marginTop: 8,
