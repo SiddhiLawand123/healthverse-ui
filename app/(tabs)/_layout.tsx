@@ -10,8 +10,13 @@ export default function TabLayout() {
     >
       <Tabs.Screen name="index" />
       <Tabs.Screen name="login" />
-      <Tabs.Screen name="otp" />
-      <Tabs.Screen name="entry" />
+      <Tabs.Screen name="verify-otp" />
+      <Tabs.Screen name="register-patient" />
+      <Tabs.Screen name="register-doctor" />
+      <Tabs.Screen name="register-lab" />
+      <Tabs.Screen name="patient-home" />
+      <Tabs.Screen name="doctor-home" />
+      <Tabs.Screen name="lab-home" />
     </Tabs>
   );
 }

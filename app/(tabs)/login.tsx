@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MotiView } from 'moti';
 import { useRouter } from 'expo-router';
-import { BlurView } from 'expo-blur';
-import RoleSelector, { Role } from '../../components/RoleSelector';
-import MobileNumberInput from '../../components/MobileNumberInput';
-import ContinueButton from '../../components/ContinueButton';
-import PremiumHealthIcon from '../../components/PremiumHealthIcon';
-import { authService } from '../../services/MockAuthService';
+import { User, Stethoscope, FlaskConical } from 'lucide-react-native';
+import { authFlowService, Role } from '../../services/AuthFlowService';
 
 export default function LoginScreen() {
-  const [phone, setPhone] = useState('');
   const [selectedRole, setSelectedRole] = useState<Role>('patient');
+  const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | undefined>(undefined);
+  const [error, setError] = useState('');
   const router = useRouter();
+
+  const roles: { id: Role; label: string; icon: typeof User }[] = [
+    { id: 'patient', label: 'Patient', icon: User },
+    { id: 'doctor', label: 'Doctor', icon: Stethoscope },
+    { id: 'lab', label: 'Lab', icon: FlaskConical },
+  ];
 
   const isPhoneValid = phone.length === 10 && /^\d+$/.test(phone);
 
@@ -23,14 +25,14 @@ export default function LoginScreen() {
     if (!isPhoneValid || loading) return;
 
     setLoading(true);
-    setError(undefined);
+    setError('');
 
     try {
-      const response = await authService.requestOtp(phone, '+91', selectedRole);
+      const response = await authFlowService.requestOtp(phone, selectedRole);
 
       if (response.success && response.requestId) {
         router.push({
-          pathname: '/otp',
+          pathname: '/verify-otp',
           params: {
             requestId: response.requestId,
             phone,
@@ -51,36 +53,11 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#0a0e1f', '#1a1535', '#2d1b4e', '#1a1535', '#0a0e1f']}
+        colors={['#0f1419', '#1a1f2e', '#0f1419']}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       />
-
-      <MotiView
-        from={{ opacity: 0.6 }}
-        animate={{ opacity: 0.8 }}
-        transition={{
-          type: 'timing',
-          duration: 12000,
-          loop: true,
-          repeatReverse: true,
-        }}
-        style={styles.gradientOverlay}
-      >
-        <LinearGradient
-          colors={['rgba(138, 102, 208, 0.12)', 'rgba(100, 80, 180, 0.08)', 'rgba(72, 61, 139, 0.06)']}
-          style={styles.gradientOverlayInner}
-          start={{ x: 0.2, y: 0.2 }}
-          end={{ x: 0.8, y: 0.8 }}
-        />
-      </MotiView>
-
-      <View style={styles.blurLayerWrapper}>
-        <View style={styles.blurLayer1} />
-        <View style={styles.blurLayer2} />
-        <View style={styles.blurLayer3} />
-      </View>
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -92,69 +69,127 @@ export default function LoginScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <MotiView
-            from={{ opacity: 0, translateY: -20 }}
+            from={{ opacity: 0, translateY: -30 }}
             animate={{ opacity: 1, translateY: 0 }}
-            transition={{
-              type: 'timing',
-              duration: 800,
-              delay: 200,
-            }}
+            transition={{ type: 'timing', duration: 600 }}
             style={styles.header}
           >
-            <PremiumHealthIcon />
-
-            <Text style={styles.appName} allowFontScaling={false}>HealthVault</Text>
-            <Text style={styles.tagline} allowFontScaling={false}>Your family's lifelong health timeline.</Text>
+            <View style={styles.logoContainer}>
+              <LinearGradient
+                colors={['#3b82f6', '#2563eb']}
+                style={styles.logoGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              >
+                <Text style={styles.logoText}>H</Text>
+              </LinearGradient>
+            </View>
+            <Text style={styles.title}>Welcome Back</Text>
+            <Text style={styles.subtitle}>Sign in to continue</Text>
           </MotiView>
 
           <MotiView
-            from={{ opacity: 0, translateY: 30 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={{
-              type: 'timing',
-              duration: 700,
-              delay: 500,
-            }}
-            style={styles.cardWrapper}
+            from={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: 'spring', delay: 200, damping: 15 }}
+            style={styles.card}
           >
-            <View style={styles.cardShadow} />
-            <BlurView intensity={20} tint="dark" style={styles.glassCard}>
-              <View style={styles.cardBorder}>
-                <View style={styles.cardContent}>
-                  <RoleSelector selectedRole={selectedRole} onSelectRole={setSelectedRole} />
+            <Text style={styles.label}>Select Your Role</Text>
+            <View style={styles.rolesContainer}>
+              {roles.map((role, index) => {
+                const Icon = role.icon;
+                const isSelected = selectedRole === role.id;
 
-                  <MobileNumberInput
-                    value={phone}
-                    onChangeText={setPhone}
-                    error={error}
-                    onSubmit={handleContinue}
-                  />
+                return (
+                  <MotiView
+                    key={role.id}
+                    from={{ opacity: 0, translateY: 20 }}
+                    animate={{ opacity: 1, translateY: 0 }}
+                    transition={{ delay: 300 + index * 100, type: 'spring' }}
+                    style={styles.roleWrapper}
+                  >
+                    <TouchableOpacity
+                      onPress={() => setSelectedRole(role.id)}
+                      activeOpacity={0.7}
+                      style={[styles.roleButton, isSelected && styles.roleButtonSelected]}
+                    >
+                      <View style={[styles.iconWrapper, isSelected && styles.iconWrapperSelected]}>
+                        <Icon
+                          size={24}
+                          color={isSelected ? '#3b82f6' : '#94a3b8'}
+                          strokeWidth={2}
+                        />
+                      </View>
+                      <Text style={[styles.roleText, isSelected && styles.roleTextSelected]}>
+                        {role.label}
+                      </Text>
+                    </TouchableOpacity>
+                  </MotiView>
+                );
+              })}
+            </View>
 
-                  <ContinueButton
-                    onPress={handleContinue}
-                    disabled={!isPhoneValid}
-                    loading={loading}
-                  />
-                </View>
-              </View>
-            </BlurView>
+            <View style={styles.divider} />
+
+            <Text style={styles.label}>Mobile Number</Text>
+            <View style={styles.inputContainer}>
+              <Text style={styles.countryCode}>+91</Text>
+              <TextInput
+                style={styles.input}
+                value={phone}
+                onChangeText={(text) => {
+                  setPhone(text);
+                  setError('');
+                }}
+                keyboardType="phone-pad"
+                maxLength={10}
+                placeholder="Enter 10-digit number"
+                placeholderTextColor="#475569"
+                onSubmitEditing={handleContinue}
+                returnKeyType="done"
+              />
+            </View>
+
+            {error && (
+              <MotiView
+                from={{ opacity: 0, translateY: -10 }}
+                animate={{ opacity: 1, translateY: 0 }}
+                style={styles.errorContainer}
+              >
+                <Text style={styles.errorText}>{error}</Text>
+              </MotiView>
+            )}
+
+            <TouchableOpacity
+              onPress={handleContinue}
+              disabled={!isPhoneValid || loading}
+              activeOpacity={0.8}
+              style={[styles.button, (!isPhoneValid || loading) && styles.buttonDisabled]}
+            >
+              <LinearGradient
+                colors={!isPhoneValid || loading ? ['#334155', '#1e293b'] : ['#3b82f6', '#2563eb']}
+                style={styles.buttonGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              >
+                {loading ? (
+                  <ActivityIndicator size="small" color="#ffffff" />
+                ) : (
+                  <Text style={styles.buttonText}>Continue</Text>
+                )}
+              </LinearGradient>
+            </TouchableOpacity>
           </MotiView>
 
           <MotiView
             from={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 900, duration: 600 }}
+            transition={{ delay: 800 }}
             style={styles.footer}
           >
-            <TouchableOpacity activeOpacity={0.6}>
-              <Text style={styles.footerLink} allowFontScaling={false}>
-                New here? <Text style={styles.footerLinkBold}>Create an account</Text>
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity activeOpacity={0.6} style={styles.helpButton}>
-              <Text style={styles.helpText} allowFontScaling={false}>Need help?</Text>
-            </TouchableOpacity>
+            <Text style={styles.footerText}>
+              By continuing, you agree to our Terms & Privacy Policy
+            </Text>
           </MotiView>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -165,7 +200,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0e1f',
+    backgroundColor: '#0f1419',
   },
   gradient: {
     position: 'absolute',
@@ -174,145 +209,175 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
   },
-  gradientOverlay: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-  },
-  gradientOverlayInner: {
-    flex: 1,
-  },
-  blurLayerWrapper: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    pointerEvents: 'none',
-  },
-  blurLayer1: {
-    position: 'absolute',
-    width: 400,
-    height: 400,
-    borderRadius: 200,
-    backgroundColor: 'rgba(183, 148, 246, 0.08)',
-    top: -100,
-    left: -100,
-  },
-  blurLayer2: {
-    position: 'absolute',
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: 'rgba(100, 80, 180, 0.06)',
-    bottom: -50,
-    right: -50,
-  },
-  blurLayer3: {
-    position: 'absolute',
-    width: 250,
-    height: 250,
-    borderRadius: 125,
-    backgroundColor: 'rgba(138, 102, 208, 0.05)',
-    top: '50%',
-    left: '50%',
-    marginLeft: -125,
-    marginTop: -125,
-  },
   keyboardView: {
     flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     paddingTop: 60,
     paddingBottom: 40,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 52,
+    marginBottom: 40,
   },
-  appName: {
+  logoContainer: {
+    marginBottom: 24,
+  },
+  logoGradient: {
+    width: 72,
+    height: 72,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#3b82f6',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  logoText: {
+    fontSize: 36,
+    fontFamily: 'Inter-Bold',
+    color: '#ffffff',
+  },
+  title: {
     fontSize: 32,
-    fontFamily: 'PlusJakarta-Bold',
-    color: '#FFFFFF',
-    marginTop: 28,
-    marginBottom: 12,
-    letterSpacing: -0.8,
+    fontFamily: 'Inter-Bold',
+    color: '#ffffff',
+    marginBottom: 8,
   },
-  tagline: {
-    fontSize: 15,
+  subtitle: {
+    fontSize: 16,
     fontFamily: 'Inter-Regular',
-    color: 'rgba(255, 255, 255, 0.65)',
-    textAlign: 'center',
-    letterSpacing: -0.3,
-    lineHeight: 24,
+    color: '#94a3b8',
   },
-  cardWrapper: {
-    width: '100%',
-    marginBottom: 44,
+  card: {
+    backgroundColor: 'rgba(30, 41, 59, 0.4)',
+    borderRadius: 24,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(148, 163, 184, 0.1)',
+    marginBottom: 24,
   },
-  cardShadow: {
-    position: 'absolute',
-    top: 0,
-    left: -12,
-    right: -12,
-    bottom: -12,
-    backgroundColor: 'rgba(138, 102, 208, 0.25)',
-    borderRadius: 36,
-    shadowColor: '#8a66d0',
-    shadowOffset: { width: 0, height: 32 },
-    shadowOpacity: 0.45,
-    shadowRadius: 48,
-    elevation: 25,
+  label: {
+    fontSize: 14,
+    fontFamily: 'Inter-Medium',
+    color: '#cbd5e1',
+    marginBottom: 12,
+    letterSpacing: 0.5,
   },
-  glassCard: {
-    borderRadius: 32,
+  rolesContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 24,
+  },
+  roleWrapper: {
+    flex: 1,
+  },
+  roleButton: {
+    backgroundColor: 'rgba(30, 41, 59, 0.6)',
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(148, 163, 184, 0.1)',
+  },
+  roleButtonSelected: {
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    borderColor: '#3b82f6',
+  },
+  iconWrapper: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: 'rgba(148, 163, 184, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  iconWrapperSelected: {
+    backgroundColor: 'rgba(59, 130, 246, 0.15)',
+  },
+  roleText: {
+    fontSize: 13,
+    fontFamily: 'Inter-Medium',
+    color: '#94a3b8',
+  },
+  roleTextSelected: {
+    color: '#3b82f6',
+    fontFamily: 'Inter-SemiBold',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: 'rgba(148, 163, 184, 0.1)',
+    marginBottom: 24,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(30, 41, 59, 0.6)',
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(148, 163, 184, 0.2)',
+    marginBottom: 16,
+  },
+  countryCode: {
+    fontSize: 16,
+    fontFamily: 'Inter-Medium',
+    color: '#cbd5e1',
+    marginRight: 12,
+    paddingRight: 12,
+    borderRightWidth: 1,
+    borderRightColor: 'rgba(148, 163, 184, 0.2)',
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: 'Inter-Medium',
+    color: '#ffffff',
+    paddingVertical: 16,
+  },
+  errorContainer: {
+    marginBottom: 16,
+  },
+  errorText: {
+    fontSize: 13,
+    fontFamily: 'Inter-Medium',
+    color: '#ef4444',
+  },
+  button: {
+    borderRadius: 16,
     overflow: 'hidden',
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    marginTop: 8,
   },
-  cardBorder: {
-    borderWidth: 1,
-    borderColor: 'rgba(183, 148, 246, 0.25)',
-    borderRadius: 32,
-    padding: 1.5,
+  buttonDisabled: {
+    opacity: 0.5,
   },
-  cardContent: {
-    paddingHorizontal: 28,
-    paddingVertical: 40,
-    backgroundColor: 'rgba(10, 14, 31, 0.3)',
-    borderRadius: 31,
+  buttonGradient: {
+    paddingVertical: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    fontSize: 16,
+    fontFamily: 'Inter-SemiBold',
+    color: '#ffffff',
+    letterSpacing: 0.5,
   },
   footer: {
     alignItems: 'center',
     marginTop: 'auto',
-    gap: 16,
+    paddingTop: 24,
   },
-  footerLink: {
-    fontSize: 14,
+  footerText: {
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
-    color: 'rgba(255, 255, 255, 0.45)',
+    color: '#64748b',
     textAlign: 'center',
-    letterSpacing: -0.3,
-  },
-  footerLinkBold: {
-    fontFamily: 'Inter-SemiBold',
-    color: 'rgba(255, 255, 255, 0.75)',
-    textDecorationLine: 'underline',
-    textDecorationColor: 'rgba(255, 255, 255, 0.3)',
-  },
-  helpButton: {
-    paddingVertical: 6,
-  },
-  helpText: {
-    fontSize: 13,
-    fontFamily: 'Inter-Medium',
-    color: 'rgba(255, 255, 255, 0.4)',
-    textAlign: 'center',
-    letterSpacing: -0.2,
+    lineHeight: 18,
   },
 });
