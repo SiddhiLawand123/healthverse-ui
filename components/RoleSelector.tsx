@@ -32,8 +32,8 @@ export default function RoleSelector({ selectedRole, onSelectRole }: RoleSelecto
           >
             <MotiView
               animate={{
-                backgroundColor: isSelected ? '#EFF6FF' : '#F9FAFB',
-                borderColor: isSelected ? '#2563EB' : '#E5E7EB',
+                backgroundColor: isSelected ? 'rgba(0, 245, 255, 0.12)' : 'rgba(255, 255, 255, 0.03)',
+                borderColor: isSelected ? 'rgba(0, 245, 255, 0.4)' : 'rgba(255, 255, 255, 0.08)',
                 scale: isSelected ? 1 : 1,
               }}
               transition={{
@@ -43,9 +43,9 @@ export default function RoleSelector({ selectedRole, onSelectRole }: RoleSelecto
               style={styles.chip}
             >
               <Icon
-                size={16}
-                color={isSelected ? '#2563EB' : '#6B7280'}
-                strokeWidth={2}
+                size={15}
+                color={isSelected ? '#00F5FF' : 'rgba(255, 255, 255, 0.4)'}
+                strokeWidth={1.8}
               />
               <Text style={[styles.chipText, isSelected && styles.chipTextSelected]} allowFontScaling={false}>
                 {role.label}
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     gap: 10,
-    marginBottom: 26,
+    marginBottom: 28,
     justifyContent: 'center',
   },
   chipTouchable: {
@@ -72,20 +72,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 7,
-    paddingHorizontal: 12,
-    paddingVertical: 11,
-    borderRadius: 12,
-    borderWidth: 1.5,
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 14,
+    borderWidth: 1,
   },
   chipText: {
     fontSize: 13,
-    fontFamily: 'Inter-SemiBold',
-    color: '#6B7280',
-    letterSpacing: -0.2,
+    fontFamily: 'Inter-Medium',
+    color: 'rgba(255, 255, 255, 0.5)',
+    letterSpacing: -0.3,
   },
   chipTextSelected: {
-    color: '#2563EB',
-    fontFamily: 'Inter-Bold',
+    color: '#00F5FF',
+    fontFamily: 'Inter-SemiBold',
   },
 });
