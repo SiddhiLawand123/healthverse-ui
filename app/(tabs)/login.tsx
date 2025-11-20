@@ -27,7 +27,7 @@ export default function LoginScreen() {
       id: 'patient',
       label: 'Patient',
       icon: User,
-      gradient: ['#3b82f6', '#2563eb'],
+      gradient: ['#ff8fa3', '#ff6b88'],
       description: 'Access your health records',
       decorIcon: Heart,
     },
@@ -35,7 +35,7 @@ export default function LoginScreen() {
       id: 'doctor',
       label: 'Doctor',
       icon: Stethoscope,
-      gradient: ['#10b981', '#059669'],
+      gradient: ['#ffb4c6', '#ff8fa3'],
       description: 'Manage your patients',
       decorIcon: Activity,
     },
@@ -43,7 +43,7 @@ export default function LoginScreen() {
       id: 'lab',
       label: 'Lab',
       icon: FlaskConical,
-      gradient: ['#f59e0b', '#d97706'],
+      gradient: ['#ffc4d1', '#ffb4c6'],
       description: 'Process test reports',
       decorIcon: Microscope,
     },
@@ -87,7 +87,7 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#0f1419', '#1a1f2e', '#0f1419']}
+        colors={['#fff5f7', '#ffe8ed', '#fff0f3']}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -110,7 +110,7 @@ export default function LoginScreen() {
           >
             <View style={styles.logoContainer}>
               <LinearGradient
-                colors={['#3b82f6', '#2563eb']}
+                colors={['#ff8fa3', '#ff6b88']}
                 style={styles.logoGradient}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
@@ -158,7 +158,7 @@ export default function LoginScreen() {
                         colors={
                           isSelected
                             ? role.gradient
-                            : ['rgba(30, 41, 59, 0.5)', 'rgba(30, 41, 59, 0.3)']
+                            : ['rgba(255, 255, 255, 0.5)', 'rgba(250, 240, 243, 0.5)']
                         }
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
@@ -168,7 +168,7 @@ export default function LoginScreen() {
                           <View style={styles.iconCircle}>
                             <Icon
                               size={20}
-                              color={isSelected ? '#ffffff' : '#94a3b8'}
+                              color={isSelected ? '#ffffff' : '#9e7b8f'}
                               strokeWidth={2.5}
                             />
                           </View>
@@ -222,7 +222,7 @@ export default function LoginScreen() {
                 keyboardType="phone-pad"
                 maxLength={10}
                 placeholder="Enter 10-digit number"
-                placeholderTextColor="#475569"
+                placeholderTextColor="#d4a5b8"
                 returnKeyType="done"
               />
             </View>
@@ -244,7 +244,7 @@ export default function LoginScreen() {
               style={[styles.button, (!isPhoneValid || loading) && styles.buttonDisabled]}
             >
               <LinearGradient
-                colors={!isPhoneValid || loading ? ['#334155', '#1e293b'] : ['#3b82f6', '#2563eb']}
+                colors={!isPhoneValid || loading ? ['#f0d0d9', '#e8c0cc'] : ['#ff8fa3', '#ff6b88']}
                 style={styles.buttonGradient}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
@@ -292,7 +292,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f1419',
+    backgroundColor: '#fff5f7',
   },
   gradient: {
     position: 'absolute',
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#3b82f6',
+    shadowColor: '#ff8fa3',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -337,26 +337,31 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontFamily: 'Inter-Bold',
-    color: '#ffffff',
+    color: '#2d1b2e',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
     fontFamily: 'Inter-Regular',
-    color: '#94a3b8',
+    color: '#9e7b8f',
   },
   card: {
-    backgroundColor: 'rgba(30, 41, 59, 0.4)',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: 24,
     padding: 24,
     borderWidth: 1,
-    borderColor: 'rgba(148, 163, 184, 0.1)',
+    borderColor: 'rgba(255, 143, 163, 0.2)',
     marginBottom: 24,
+    shadowColor: '#ff8fa3',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 4,
   },
   label: {
     fontSize: 16,
     fontFamily: 'Inter-SemiBold',
-    color: '#ffffff',
+    color: '#2d1b2e',
     marginBottom: 20,
     letterSpacing: 0.3,
   },
@@ -379,13 +384,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 16,
     borderWidth: 1.5,
-    borderColor: 'rgba(148, 163, 184, 0.15)',
+    borderColor: 'rgba(255, 143, 163, 0.2)',
     minHeight: 100,
     position: 'relative',
     overflow: 'hidden',
   },
   roleGradientSelected: {
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: 'rgba(255, 143, 163, 0.6)',
   },
   roleContent: {
     alignItems: 'center',
@@ -395,14 +400,14 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    backgroundColor: 'rgba(255, 143, 163, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   roleText: {
     fontSize: 13,
     fontFamily: 'Inter-SemiBold',
-    color: '#94a3b8',
+    color: '#9e7b8f',
   },
   roleTextSelected: {
     color: '#ffffff',
@@ -421,34 +426,34 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: 'rgba(148, 163, 184, 0.1)',
+    backgroundColor: 'rgba(255, 143, 163, 0.15)',
     marginBottom: 24,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(30, 41, 59, 0.6)',
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 4,
     borderWidth: 1,
-    borderColor: 'rgba(148, 163, 184, 0.2)',
+    borderColor: 'rgba(255, 143, 163, 0.25)',
     marginBottom: 16,
   },
   countryCode: {
     fontSize: 16,
     fontFamily: 'Inter-Medium',
-    color: '#cbd5e1',
+    color: '#9e7b8f',
     marginRight: 12,
     paddingRight: 12,
     borderRightWidth: 1,
-    borderRightColor: 'rgba(148, 163, 184, 0.2)',
+    borderRightColor: 'rgba(255, 143, 163, 0.25)',
   },
   input: {
     flex: 1,
     fontSize: 16,
     fontFamily: 'Inter-Medium',
-    color: '#ffffff',
+    color: '#2d1b2e',
     paddingVertical: 16,
   },
   errorContainer: {
@@ -489,7 +494,7 @@ const styles = StyleSheet.create({
   guestText: {
     fontSize: 14,
     fontFamily: 'Inter-Medium',
-    color: '#3b82f6',
+    color: '#ff6b88',
     letterSpacing: 0.2,
   },
   footer: {
@@ -500,7 +505,7 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 12,
     fontFamily: 'Inter-Regular',
-    color: '#64748b',
+    color: '#9e7b8f',
     textAlign: 'center',
     lineHeight: 18,
   },
