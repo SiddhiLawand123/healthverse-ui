@@ -87,7 +87,7 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#0f1419', '#1a1f2e', '#0f1419']}
+        colors={['#E0F2FF', '#F0F9FF', '#FFFFFF']}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -158,7 +158,7 @@ export default function LoginScreen() {
                         colors={
                           isSelected
                             ? role.gradient
-                            : ['rgba(30, 41, 59, 0.5)', 'rgba(30, 41, 59, 0.3)']
+                            : ['rgba(255, 255, 255, 0.9)', 'rgba(241, 245, 249, 0.9)']
                         }
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
@@ -222,7 +222,7 @@ export default function LoginScreen() {
                 keyboardType="phone-pad"
                 maxLength={10}
                 placeholder="Enter 10-digit number"
-                placeholderTextColor="#475569"
+                placeholderTextColor="#94a3b8"
                 returnKeyType="done"
               />
             </View>
@@ -292,7 +292,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f1419',
+    backgroundColor: '#E0F2FF',
   },
   gradient: {
     position: 'absolute',
@@ -337,26 +337,26 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontFamily: 'Inter-Bold',
-    color: '#ffffff',
+    color: '#1e293b',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
     fontFamily: 'Inter-Regular',
-    color: '#94a3b8',
+    color: '#64748b',
   },
   card: {
-    backgroundColor: 'rgba(30, 41, 59, 0.4)',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
     borderRadius: 24,
     padding: 24,
     borderWidth: 1,
-    borderColor: 'rgba(148, 163, 184, 0.1)',
+    borderColor: 'rgba(59, 130, 246, 0.1)',
     marginBottom: 24,
   },
   label: {
     fontSize: 16,
     fontFamily: 'Inter-SemiBold',
-    color: '#ffffff',
+    color: '#1e293b',
     marginBottom: 20,
     letterSpacing: 0.3,
   },
@@ -379,13 +379,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 16,
     borderWidth: 1.5,
-    borderColor: 'rgba(148, 163, 184, 0.15)',
+    borderColor: 'rgba(59, 130, 246, 0.2)',
     minHeight: 100,
     position: 'relative',
     overflow: 'hidden',
   },
   roleGradientSelected: {
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: 'rgba(59, 130, 246, 0.5)',
   },
   roleContent: {
     alignItems: 'center',
@@ -395,14 +395,14 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   roleText: {
     fontSize: 13,
     fontFamily: 'Inter-SemiBold',
-    color: '#94a3b8',
+    color: '#64748b',
   },
   roleTextSelected: {
     color: '#ffffff',
@@ -421,34 +421,34 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: 'rgba(148, 163, 184, 0.1)',
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
     marginBottom: 24,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(30, 41, 59, 0.6)',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 4,
     borderWidth: 1,
-    borderColor: 'rgba(148, 163, 184, 0.2)',
+    borderColor: 'rgba(59, 130, 246, 0.2)',
     marginBottom: 16,
   },
   countryCode: {
     fontSize: 16,
     fontFamily: 'Inter-Medium',
-    color: '#cbd5e1',
+    color: '#475569',
     marginRight: 12,
     paddingRight: 12,
     borderRightWidth: 1,
-    borderRightColor: 'rgba(148, 163, 184, 0.2)',
+    borderRightColor: 'rgba(59, 130, 246, 0.2)',
   },
   input: {
     flex: 1,
     fontSize: 16,
     fontFamily: 'Inter-Medium',
-    color: '#ffffff',
+    color: '#1e293b',
     paddingVertical: 16,
   },
   errorContainer: {

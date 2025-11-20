@@ -129,7 +129,7 @@ export default function VerifyOtpScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#0f1419', '#1a1f2e', '#0f1419']}
+        colors={['#E0F2FF', '#F0F9FF', '#FFFFFF']}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -222,7 +222,7 @@ export default function VerifyOtpScreen() {
             keyboardShouldPersistTaps="handled"
           >
             <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-              <ArrowLeft size={24} color="#ffffff" strokeWidth={2} />
+              <ArrowLeft size={24} color="#1e293b" strokeWidth={2} />
             </TouchableOpacity>
 
             <MotiView
@@ -327,7 +327,7 @@ export default function VerifyOtpScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f1419',
+    backgroundColor: '#E0F2FF',
   },
   gradient: {
     position: 'absolute',
@@ -367,13 +367,13 @@ const styles = StyleSheet.create({
   successTitle: {
     fontSize: 32,
     fontFamily: 'Inter-Bold',
-    color: '#ffffff',
+    color: '#1e293b',
     marginBottom: 12,
   },
   successSubtitle: {
     fontSize: 16,
     fontFamily: 'Inter-Regular',
-    color: '#94a3b8',
+    color: '#64748b',
     textAlign: 'center',
     lineHeight: 24,
   },
@@ -401,12 +401,12 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 16,
-    backgroundColor: 'rgba(30, 41, 59, 0.4)',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 32,
     borderWidth: 1,
-    borderColor: 'rgba(148, 163, 184, 0.1)',
+    borderColor: 'rgba(59, 130, 246, 0.2)',
   },
   header: {
     marginBottom: 40,
@@ -414,13 +414,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontFamily: 'Inter-Bold',
-    color: '#ffffff',
+    color: '#1e293b',
     marginBottom: 12,
   },
   subtitle: {
     fontSize: 16,
     fontFamily: 'Inter-Regular',
-    color: '#94a3b8',
+    color: '#64748b',
     lineHeight: 24,
   },
   phone: {
@@ -428,11 +428,11 @@ const styles = StyleSheet.create({
     color: '#3b82f6',
   },
   card: {
-    backgroundColor: 'rgba(30, 41, 59, 0.4)',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
     borderRadius: 24,
     padding: 24,
     borderWidth: 1,
-    borderColor: 'rgba(148, 163, 184, 0.1)',
+    borderColor: 'rgba(59, 130, 246, 0.1)',
     marginBottom: 24,
   },
   otpContainer: {
@@ -448,12 +448,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 64,
     borderRadius: 16,
-    backgroundColor: 'rgba(30, 41, 59, 0.6)',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderWidth: 2,
-    borderColor: 'rgba(148, 163, 184, 0.2)',
+    borderColor: 'rgba(59, 130, 246, 0.2)',
     fontSize: 24,
     fontFamily: 'Inter-Bold',
-    color: '#ffffff',
+    color: '#1e293b',
     textAlign: 'center',
   },
   otpInputFilled: {

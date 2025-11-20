@@ -20,7 +20,7 @@ export default function LabHomeScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#0f1419', '#1a1f2e', '#0f1419']}
+        colors={['#E0F2FF', '#F0F9FF', '#FFFFFF']}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -34,10 +34,10 @@ export default function LabHomeScreen() {
           </View>
           <View style={styles.headerIcons}>
             <TouchableOpacity style={styles.iconButton}>
-              <Bell size={22} color="#cbd5e1" strokeWidth={2} />
+              <Bell size={22} color="#475569" strokeWidth={2} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.iconButton}>
-              <Settings size={22} color="#cbd5e1" strokeWidth={2} />
+              <Settings size={22} color="#475569" strokeWidth={2} />
             </TouchableOpacity>
           </View>
         </View>
@@ -159,19 +159,19 @@ export default function LabHomeScreen() {
 
           <TouchableOpacity style={styles.navButton} activeOpacity={0.7}>
             <View style={styles.navButtonInner}>
-              <Search size={24} color="#94a3b8" strokeWidth={2} />
+              <Search size={24} color="#64748b" strokeWidth={2} />
             </View>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.navButton} activeOpacity={0.7}>
             <View style={styles.navButtonInner}>
-              <Calendar size={24} color="#94a3b8" strokeWidth={2} />
+              <Calendar size={24} color="#64748b" strokeWidth={2} />
             </View>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.navButton} activeOpacity={0.7}>
             <View style={styles.navButtonInner}>
-              <User size={24} color="#94a3b8" strokeWidth={2} />
+              <User size={24} color="#64748b" strokeWidth={2} />
             </View>
           </TouchableOpacity>
         </View>
@@ -183,7 +183,7 @@ export default function LabHomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f1419',
+    backgroundColor: '#E0F2FF',
   },
   gradient: {
     position: 'absolute',
@@ -206,12 +206,12 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#94a3b8',
+    color: '#64748b',
   },
   username: {
     fontSize: 28,
     fontFamily: 'Inter-Bold',
-    color: '#ffffff',
+    color: '#1e293b',
     marginTop: 4,
   },
   headerIcons: {
@@ -222,11 +222,11 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: 'rgba(30, 41, 59, 0.4)',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(148, 163, 184, 0.1)',
+    borderColor: 'rgba(59, 130, 246, 0.2)',
   },
   statsContainer: {
     flexDirection: 'row',
@@ -235,12 +235,12 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: 'rgba(30, 41, 59, 0.4)',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
     borderRadius: 20,
     padding: 16,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(148, 163, 184, 0.1)',
+    borderColor: 'rgba(59, 130, 246, 0.1)',
   },
   statIcon: {
     width: 48,
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 24,
     fontFamily: 'Inter-Bold',
-    color: '#ffffff',
+    color: '#1e293b',
     marginBottom: 4,
   },
   statLabel: {
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontFamily: 'Inter-Bold',
-    color: '#ffffff',
+    color: '#1e293b',
   },
   sectionLink: {
     fontSize: 14,
@@ -282,12 +282,12 @@ const styles = StyleSheet.create({
     color: '#f59e0b',
   },
   testCard: {
-    backgroundColor: 'rgba(30, 41, 59, 0.4)',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: 'rgba(148, 163, 184, 0.1)',
+    borderColor: 'rgba(59, 130, 246, 0.1)',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
   patientName: {
     fontSize: 16,
     fontFamily: 'Inter-SemiBold',
-    color: '#ffffff',
+    color: '#1e293b',
     marginBottom: 4,
   },
   testName: {
@@ -376,16 +376,16 @@ const styles = StyleSheet.create({
   },
   navContainer: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(20, 28, 45, 0.95)',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     borderRadius: 28,
     paddingHorizontal: 16,
     paddingVertical: 12,
     gap: 12,
     borderWidth: 1,
-    borderColor: 'rgba(148, 163, 184, 0.15)',
-    shadowColor: '#000',
+    borderColor: 'rgba(59, 130, 246, 0.2)',
+    shadowColor: '#f59e0b',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.15,
     shadowRadius: 16,
     elevation: 16,
   },
@@ -397,7 +397,7 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 26,
-    backgroundColor: 'rgba(148, 163, 184, 0.1)',
+    backgroundColor: 'rgba(241, 245, 249, 0.8)',
     alignItems: 'center',
     justifyContent: 'center',
   },

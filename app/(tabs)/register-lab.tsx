@@ -45,7 +45,7 @@ export default function RegisterLabScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#0f1419', '#1a1f2e', '#0f1419']}
+        colors={['#E0F2FF', '#F0F9FF', '#FFFFFF']}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -89,13 +89,13 @@ export default function RegisterLabScreen() {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Laboratory Name</Text>
               <View style={styles.inputContainer}>
-                <Building2 size={20} color="#94a3b8" strokeWidth={2} />
+                <Building2 size={20} color="#64748b" strokeWidth={2} />
                 <TextInput
                   style={styles.input}
                   value={formData.labName}
                   onChangeText={(text) => setFormData({ ...formData, labName: text })}
                   placeholder="e.g., HealthCare Diagnostics"
-                  placeholderTextColor="#475569"
+                  placeholderTextColor="#94a3b8"
                   returnKeyType="next"
                 />
               </View>
@@ -104,13 +104,13 @@ export default function RegisterLabScreen() {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Owner Name</Text>
               <View style={styles.inputContainer}>
-                <User size={20} color="#94a3b8" strokeWidth={2} />
+                <User size={20} color="#64748b" strokeWidth={2} />
                 <TextInput
                   style={styles.input}
                   value={formData.ownerName}
                   onChangeText={(text) => setFormData({ ...formData, ownerName: text })}
                   placeholder="Enter owner's full name"
-                  placeholderTextColor="#475569"
+                  placeholderTextColor="#94a3b8"
                   returnKeyType="next"
                 />
               </View>
@@ -119,13 +119,13 @@ export default function RegisterLabScreen() {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Lab Address</Text>
               <View style={[styles.inputContainer, styles.textAreaContainer]}>
-                <MapPin size={20} color="#94a3b8" strokeWidth={2} style={styles.textAreaIcon} />
+                <MapPin size={20} color="#64748b" strokeWidth={2} style={styles.textAreaIcon} />
                 <TextInput
                   style={[styles.input, styles.textArea]}
                   value={formData.address}
                   onChangeText={(text) => setFormData({ ...formData, address: text })}
                   placeholder="Complete address with city and pincode"
-                  placeholderTextColor="#475569"
+                  placeholderTextColor="#94a3b8"
                   multiline
                   numberOfLines={3}
                   textAlignVertical="top"
@@ -174,7 +174,7 @@ export default function RegisterLabScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f1419',
+    backgroundColor: '#E0F2FF',
   },
   gradient: {
     position: 'absolute',
@@ -214,20 +214,20 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontFamily: 'Inter-Bold',
-    color: '#ffffff',
+    color: '#1e293b',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 15,
     fontFamily: 'Inter-Regular',
-    color: '#94a3b8',
+    color: '#64748b',
   },
   card: {
-    backgroundColor: 'rgba(30, 41, 59, 0.4)',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
     borderRadius: 24,
     padding: 24,
     borderWidth: 1,
-    borderColor: 'rgba(148, 163, 184, 0.1)',
+    borderColor: 'rgba(59, 130, 246, 0.1)',
   },
   inputGroup: {
     marginBottom: 24,
@@ -235,19 +235,19 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontFamily: 'Inter-Medium',
-    color: '#cbd5e1',
+    color: '#475569',
     marginBottom: 10,
     letterSpacing: 0.5,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(30, 41, 59, 0.6)',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 4,
     borderWidth: 1,
-    borderColor: 'rgba(148, 163, 184, 0.2)',
+    borderColor: 'rgba(59, 130, 246, 0.2)',
     gap: 12,
   },
   textAreaContainer: {
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     fontFamily: 'Inter-Medium',
-    color: '#ffffff',
+    color: '#1e293b',
     paddingVertical: 16,
   },
   textArea: {
