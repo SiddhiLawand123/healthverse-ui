@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MotiView } from 'moti';
 import { useRouter } from 'expo-router';
-import { User, Stethoscope, FlaskConical } from 'lucide-react-native';
+import { User, Stethoscope, FlaskConical, Heart, Activity, Microscope } from 'lucide-react-native';
 import { authFlowService, Role } from '../../services/AuthFlowService';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function LoginScreen() {
   const [selectedRole, setSelectedRole] = useState<Role>('patient');
@@ -13,10 +15,38 @@ export default function LoginScreen() {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const roles: { id: Role; label: string; icon: typeof User }[] = [
-    { id: 'patient', label: 'Patient', icon: User },
-    { id: 'doctor', label: 'Doctor', icon: Stethoscope },
-    { id: 'lab', label: 'Lab', icon: FlaskConical },
+  const roles: {
+    id: Role;
+    label: string;
+    icon: typeof User;
+    gradient: string[];
+    description: string;
+    decorIcon: typeof Heart;
+  }[] = [
+    {
+      id: 'patient',
+      label: 'Patient',
+      icon: User,
+      gradient: ['#3b82f6', '#2563eb'],
+      description: 'Access your health records',
+      decorIcon: Heart,
+    },
+    {
+      id: 'doctor',
+      label: 'Doctor',
+      icon: Stethoscope,
+      gradient: ['#10b981', '#059669'],
+      description: 'Manage your patients',
+      decorIcon: Activity,
+    },
+    {
+      id: 'lab',
+      label: 'Lab',
+      icon: FlaskConical,
+      gradient: ['#f59e0b', '#d97706'],
+      description: 'Process test reports',
+      decorIcon: Microscope,
+    },
   ];
 
   const isPhoneValid = phone.length === 10 && /^\d+$/.test(phone);
@@ -94,35 +124,108 @@ export default function LoginScreen() {
             transition={{ type: 'spring', delay: 200, damping: 15 }}
             style={styles.card}
           >
-            <Text style={styles.label}>Select Your Role</Text>
+            <Text style={styles.label}>I am a...</Text>
             <View style={styles.rolesContainer}>
               {roles.map((role, index) => {
                 const Icon = role.icon;
+                const DecorIcon = role.decorIcon;
                 const isSelected = selectedRole === role.id;
+                const isCenter = index === 1;
 
                 return (
                   <MotiView
                     key={role.id}
-                    from={{ opacity: 0, translateY: 20 }}
-                    animate={{ opacity: 1, translateY: 0 }}
-                    transition={{ delay: 300 + index * 100, type: 'spring' }}
-                    style={styles.roleWrapper}
+                    from={{ opacity: 0, scale: 0.8, rotateY: '45deg' }}
+                    animate={{
+                      opacity: 1,
+                      scale: isSelected ? 1.05 : isCenter ? 0.95 : 0.85,
+                      rotateY: '0deg',
+                      translateY: isSelected ? -8 : 0,
+                    }}
+                    transition={{
+                      delay: 300 + index * 100,
+                      type: 'spring',
+                      damping: 12,
+                      stiffness: 100,
+                    }}
+                    style={[styles.roleWrapper, isCenter && styles.roleWrapperCenter]}
                   >
                     <TouchableOpacity
                       onPress={() => setSelectedRole(role.id)}
                       activeOpacity={0.7}
-                      style={[styles.roleButton, isSelected && styles.roleButtonSelected]}
+                      style={styles.roleButton}
                     >
-                      <View style={[styles.iconWrapper, isSelected && styles.iconWrapperSelected]}>
-                        <Icon
-                          size={24}
-                          color={isSelected ? '#3b82f6' : '#94a3b8'}
-                          strokeWidth={2}
-                        />
-                      </View>
-                      <Text style={[styles.roleText, isSelected && styles.roleTextSelected]}>
-                        {role.label}
-                      </Text>
+                      <LinearGradient
+                        colors={
+                          isSelected
+                            ? role.gradient
+                            : ['rgba(30, 41, 59, 0.6)', 'rgba(30, 41, 59, 0.4)']
+                        }
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={[styles.roleGradient, isSelected && styles.roleGradientSelected]}
+                      >
+                        <MotiView
+                          animate={{
+                            scale: isSelected ? [1, 1.1, 1] : 1,
+                          }}
+                          transition={{
+                            type: 'timing',
+                            duration: 1000,
+                            loop: isSelected,
+                          }}
+                          style={styles.iconCircle}
+                        >
+                          <Icon
+                            size={28}
+                            color={isSelected ? '#ffffff' : '#94a3b8'}
+                            strokeWidth={2}
+                          />
+                        </MotiView>
+
+                        {isSelected && (
+                          <MotiView
+                            from={{ opacity: 0, scale: 0.5, rotate: '-180deg' }}
+                            animate={{ opacity: 0.15, scale: 1.2, rotate: '0deg' }}
+                            transition={{ type: 'spring', delay: 100 }}
+                            style={styles.decorIconWrapper}
+                          >
+                            <DecorIcon size={48} color="#ffffff" strokeWidth={1} />
+                          </MotiView>
+                        )}
+
+                        <View style={styles.roleInfo}>
+                          <Text
+                            style={[
+                              styles.roleText,
+                              isSelected && styles.roleTextSelected,
+                            ]}
+                          >
+                            {role.label}
+                          </Text>
+                          <Text
+                            style={[
+                              styles.roleDescription,
+                              isSelected && styles.roleDescriptionSelected,
+                            ]}
+                          >
+                            {role.description}
+                          </Text>
+                        </View>
+
+                        {isSelected && (
+                          <MotiView
+                            from={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ type: 'spring', delay: 200 }}
+                            style={styles.checkmark}
+                          >
+                            <View style={styles.checkmarkCircle}>
+                              <Text style={styles.checkmarkText}>✓</Text>
+                            </View>
+                          </MotiView>
+                        )}
+                      </LinearGradient>
                     </TouchableOpacity>
                   </MotiView>
                 );
@@ -262,52 +365,112 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   label: {
-    fontSize: 14,
-    fontFamily: 'Inter-Medium',
-    color: '#cbd5e1',
-    marginBottom: 12,
-    letterSpacing: 0.5,
+    fontSize: 16,
+    fontFamily: 'Inter-SemiBold',
+    color: '#ffffff',
+    marginBottom: 20,
+    letterSpacing: 0.3,
   },
   rolesContainer: {
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 24,
+    marginBottom: 32,
+    paddingHorizontal: 4,
   },
   roleWrapper: {
     flex: 1,
   },
+  roleWrapperCenter: {
+    zIndex: 1,
+  },
   roleButton: {
-    backgroundColor: 'rgba(30, 41, 59, 0.6)',
-    borderRadius: 16,
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  roleGradient: {
     padding: 16,
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'rgba(148, 163, 184, 0.1)',
-  },
-  roleButtonSelected: {
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-    borderColor: '#3b82f6',
-  },
-  iconWrapper: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: 'rgba(148, 163, 184, 0.1)',
+    paddingVertical: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(148, 163, 184, 0.1)',
+    minHeight: 140,
+    position: 'relative',
+    overflow: 'hidden',
   },
-  iconWrapperSelected: {
-    backgroundColor: 'rgba(59, 130, 246, 0.15)',
+  roleGradientSelected: {
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 12,
+  },
+  iconCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+    zIndex: 2,
+  },
+  decorIconWrapper: {
+    position: 'absolute',
+    top: -10,
+    right: -10,
+    zIndex: 0,
+  },
+  roleInfo: {
+    alignItems: 'center',
+    zIndex: 2,
   },
   roleText: {
-    fontSize: 13,
-    fontFamily: 'Inter-Medium',
+    fontSize: 15,
+    fontFamily: 'Inter-Bold',
     color: '#94a3b8',
+    marginBottom: 4,
   },
   roleTextSelected: {
-    color: '#3b82f6',
-    fontFamily: 'Inter-SemiBold',
+    color: '#ffffff',
+  },
+  roleDescription: {
+    fontSize: 11,
+    fontFamily: 'Inter-Regular',
+    color: '#64748b',
+    textAlign: 'center',
+    lineHeight: 16,
+  },
+  roleDescriptionSelected: {
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  checkmark: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    zIndex: 3,
+  },
+  checkmarkCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.5)',
+  },
+  checkmarkText: {
+    fontSize: 14,
+    fontFamily: 'Inter-Bold',
+    color: '#ffffff',
   },
   divider: {
     height: 1,
