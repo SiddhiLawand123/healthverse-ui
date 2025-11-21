@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform, StatusBar, Modal, TextInput } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowLeft, Clock, CheckCircle, XCircle, Eye, Filter } from 'lucide-react-native';
+import { MotiView } from 'moti';
+import { ArrowLeft, Clock, CheckCircle, XCircle, Eye, Filter, Calendar as CalendarIcon, Home, ClipboardList, QrCode, User } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useTheme, lightTheme, darkTheme } from '../../contexts/ThemeContext';
 
@@ -99,11 +100,38 @@ export default function DoctorAppointmentsScreen() {
     setAppointments(prev => prev.filter(apt => apt.id !== id));
   };
 
+  const [rescheduleModal, setRescheduleModal] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [newDate, setNewDate] = useState('');
+  const [newTime, setNewTime] = useState('');
+
   const handleViewPatient = (patientId: string, status: string) => {
     router.push({
       pathname: '/(tabs)/doctor-patient-profile',
       params: { patientId, appointmentStatus: status },
     });
+  };
+
+  const handleReschedule = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setNewDate(appointment.date);
+    setNewTime(appointment.time);
+    setRescheduleModal(true);
+  };
+
+  const handleConfirmReschedule = () => {
+    if (selectedAppointment && newDate && newTime) {
+      setAppointments(prev =>
+        prev.map(apt => apt.id === selectedAppointment.id
+          ? { ...apt, date: newDate, time: newTime }
+          : apt
+        )
+      );
+      setRescheduleModal(false);
+      setSelectedAppointment(null);
+      setNewDate('');
+      setNewTime('');
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -239,7 +267,7 @@ export default function DoctorAppointmentsScreen() {
                   >
                     <Eye size={16} color={colors.accent} strokeWidth={2} />
                     <Text style={[styles.actionButtonText, { color: colors.accent }]}>
-                      View Patient
+                      View
                     </Text>
                   </TouchableOpacity>
 
@@ -266,12 +294,156 @@ export default function DoctorAppointmentsScreen() {
                       </TouchableOpacity>
                     </>
                   )}
+
+                  {(isConfirmed || isPending) && (
+                    <TouchableOpacity
+                      onPress={() => handleReschedule(appointment)}
+                      style={[styles.actionButton, { backgroundColor: 'rgba(99, 102, 241, 0.1)' }]}
+                    >
+                      <CalendarIcon size={16} color="#6366F1" strokeWidth={2} />
+                      <Text style={[styles.actionButtonText, { color: '#6366F1' }]}>
+                        Reschedule
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
               </View>
             );
           })
         )}
       </ScrollView>
+
+      <View style={styles.bottomNav}>
+        <View style={[styles.navContainer, { backgroundColor: colors.navBg, borderColor: colors.iconButtonBorder }]}>
+          <TouchableOpacity
+            onPress={() => router.push('/(tabs)/doctor-home')}
+            style={styles.navButton}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.navButtonInner, { backgroundColor: colors.navInactive }]}>
+              <Home size={24} color={colors.textSecondary} strokeWidth={2} />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.navButton} activeOpacity={0.7}>
+            <View style={[styles.navButtonInner, styles.navButtonActive]}>
+              <ClipboardList size={24} color="#ffffff" strokeWidth={2} />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.navButton} activeOpacity={0.7}>
+            <View style={[styles.navButtonInner, { backgroundColor: colors.navInactive }]}>
+              <QrCode size={24} color={colors.textSecondary} strokeWidth={2} />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => router.push('/(tabs)/doctor-profile')}
+            style={styles.navButton}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.navButtonInner, { backgroundColor: colors.navInactive }]}>
+              <User size={24} color={colors.textSecondary} strokeWidth={2} />
+            </View>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <Modal
+        visible={rescheduleModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setRescheduleModal(false)}
+      >
+        <View style={[styles.modalOverlay, { backgroundColor: isDark ? 'rgba(15, 23, 42, 0.9)' : 'rgba(0, 0, 0, 0.6)' }]}>
+          <MotiView
+            from={{ opacity: 0, translateY: 50 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            transition={{ type: 'spring', damping: 15 }}
+            style={[styles.rescheduleModal, { backgroundColor: colors.containerBg }]}
+          >
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>Reschedule Appointment</Text>
+              <TouchableOpacity onPress={() => setRescheduleModal(false)}>
+                <XCircle size={24} color={colors.textSecondary} strokeWidth={2} />
+              </TouchableOpacity>
+            </View>
+
+            {selectedAppointment && (
+              <View style={[styles.modalPatientInfo, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+                <View style={[styles.modalPatientAvatar, { backgroundColor: `${getStatusColor(selectedAppointment.status)}15` }]}>
+                  <Text style={[styles.modalAvatarText, { color: getStatusColor(selectedAppointment.status) }]}>
+                    {selectedAppointment.patientName.charAt(0)}
+                  </Text>
+                </View>
+                <View style={styles.modalPatientDetails}>
+                  <Text style={[styles.modalPatientName, { color: colors.text }]}>
+                    {selectedAppointment.patientName}
+                  </Text>
+                  <Text style={[styles.modalPatientReason, { color: colors.textTertiary }]}>
+                    {selectedAppointment.reason}
+                  </Text>
+                </View>
+              </View>
+            )}
+
+            <View style={styles.modalInputSection}>
+              <View style={styles.inputGroup}>
+                <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>New Date</Text>
+                <View style={[styles.inputContainer, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+                  <CalendarIcon size={18} color={colors.textSecondary} strokeWidth={2} />
+                  <TextInput
+                    style={[styles.textInput, { color: colors.text }]}
+                    value={newDate}
+                    onChangeText={setNewDate}
+                    placeholder="e.g., Jan 28, 2025"
+                    placeholderTextColor={colors.textTertiary}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>New Time</Text>
+                <View style={[styles.inputContainer, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+                  <Clock size={18} color={colors.textSecondary} strokeWidth={2} />
+                  <TextInput
+                    style={[styles.textInput, { color: colors.text }]}
+                    value={newTime}
+                    onChangeText={setNewTime}
+                    placeholder="e.g., 3:00 PM"
+                    placeholderTextColor={colors.textTertiary}
+                  />
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                onPress={() => setRescheduleModal(false)}
+                style={[styles.modalButton, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
+              >
+                <Text style={[styles.modalButtonText, { color: colors.text }]}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleConfirmReschedule}
+                disabled={!newDate || !newTime}
+                style={[styles.modalButtonPrimary, (!newDate || !newTime) && styles.modalButtonDisabled]}
+              >
+                <LinearGradient
+                  colors={['#6366F1', '#818CF8']}
+                  style={styles.modalButtonGradient}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                >
+                  <CheckCircle size={18} color="#ffffff" strokeWidth={2} />
+                  <Text style={styles.modalButtonPrimaryText}>Confirm</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          </MotiView>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -331,7 +503,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 20,
-    paddingBottom: 40,
+    paddingBottom: 120,
   },
   emptyState: {
     borderRadius: 20,
@@ -452,5 +624,159 @@ const styles = StyleSheet.create({
   actionButtonText: {
     fontSize: 12,
     fontFamily: 'Inter-SemiBold',
+  },
+  bottomNav: {
+    position: 'absolute',
+    bottom: 24,
+    left: 24,
+    right: 24,
+    alignItems: 'center',
+  },
+  navContainer: {
+    flexDirection: 'row',
+    borderRadius: 28,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 12,
+    borderWidth: 1,
+    shadowColor: '#10b981',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 16,
+  },
+  navButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  navButtonInner: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  navButtonActive: {
+    backgroundColor: '#10b981',
+    shadowColor: '#10b981',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  rescheduleModal: {
+    width: '100%',
+    maxWidth: 400,
+    borderRadius: 24,
+    padding: 24,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontFamily: 'Inter-Bold',
+  },
+  modalPatientInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginBottom: 24,
+  },
+  modalPatientAvatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  modalAvatarText: {
+    fontSize: 18,
+    fontFamily: 'Inter-Bold',
+  },
+  modalPatientDetails: {
+    flex: 1,
+  },
+  modalPatientName: {
+    fontSize: 16,
+    fontFamily: 'Inter-SemiBold',
+    marginBottom: 2,
+  },
+  modalPatientReason: {
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
+  },
+  modalInputSection: {
+    gap: 16,
+    marginBottom: 24,
+  },
+  inputGroup: {
+    gap: 8,
+  },
+  inputLabel: {
+    fontSize: 13,
+    fontFamily: 'Inter-SemiBold',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    gap: 10,
+  },
+  textInput: {
+    flex: 1,
+    fontSize: 15,
+    fontFamily: 'Inter-Regular',
+  },
+  modalActions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+  },
+  modalButtonText: {
+    fontSize: 15,
+    fontFamily: 'Inter-SemiBold',
+  },
+  modalButtonPrimary: {
+    flex: 1,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  modalButtonDisabled: {
+    opacity: 0.5,
+  },
+  modalButtonGradient: {
+    paddingVertical: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  modalButtonPrimaryText: {
+    fontSize: 15,
+    fontFamily: 'Inter-SemiBold',
+    color: '#ffffff',
   },
 });
