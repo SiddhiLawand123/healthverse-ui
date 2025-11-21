@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Share, Clipboard } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Share, Clipboard, Image, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MotiView } from 'moti';
-import { QrCode, Link2, Copy, Check } from 'lucide-react-native';
+import { QrCode, Copy, Check, RefreshCw, Share2 } from 'lucide-react-native';
 import { useTheme, lightTheme, darkTheme } from '../contexts/ThemeContext';
+import { qrCodeService, QRCodeData } from '../services/QRCodeService';
 
 interface ShareProfileProps {
   patientId: string;
@@ -16,17 +17,30 @@ export function ShareProfile({ patientId, patientName }: ShareProfileProps) {
   const [shareLink, setShareLink] = useState('');
   const [copied, setCopied] = useState(false);
   const [qrUrl, setQrUrl] = useState('');
+  const [qrData, setQrData] = useState<QRCodeData | null>(null);
+  const [regenerating, setRegenerating] = useState(false);
+  const [qrLoading, setQrLoading] = useState(true);
 
   useEffect(() => {
-    const link = `https://medicalrecords.app/profile/${patientId}?token=${generateToken()}`;
-    setShareLink(link);
+    generateNewQRCode();
+  }, [patientId, patientName]);
 
-    const qr = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;
-    setQrUrl(qr);
-  }, [patientId]);
+  const generateNewQRCode = () => {
+    setQrLoading(true);
+    const { qrData: newQrData, qrUrl: newQrUrl, shareLink: newShareLink } = qrCodeService.regenerateQRCode(
+      patientId,
+      patientName
+    );
+    setQrData(newQrData);
+    setQrUrl(newQrUrl);
+    setShareLink(newShareLink);
+    setTimeout(() => setQrLoading(false), 500);
+  };
 
-  const generateToken = () => {
-    return Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+  const handleRegenerateQR = () => {
+    setRegenerating(true);
+    generateNewQRCode();
+    setTimeout(() => setRegenerating(false), 600);
   };
 
   const handleCopyLink = async () => {
@@ -38,7 +52,7 @@ export function ShareProfile({ patientId, patientName }: ShareProfileProps) {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Check out ${patientName}'s medical profile: ${shareLink}`,
+        message: `View ${patientName}'s medical profile: ${shareLink}`,
         title: 'Share Medical Profile',
         url: shareLink,
       });
@@ -55,48 +69,61 @@ export function ShareProfile({ patientId, patientName }: ShareProfileProps) {
       style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
     >
       <View style={styles.header}>
-        <View style={[styles.iconContainer, { backgroundColor: colors.accentLight }]}>
-          <Link2 size={24} color={colors.accent} strokeWidth={2} />
-        </View>
         <Text style={[styles.title, { color: colors.text }]}>Share Profile</Text>
+        <TouchableOpacity
+          onPress={handleRegenerateQR}
+          disabled={regenerating}
+          style={[styles.regenerateButton, { backgroundColor: colors.accentLight }]}
+        >
+          <MotiView
+            animate={{ rotate: regenerating ? '360deg' : '0deg' }}
+            transition={{ type: 'timing', duration: 600, loop: regenerating }}
+          >
+            <RefreshCw size={16} color={colors.accent} strokeWidth={2} />
+          </MotiView>
+        </TouchableOpacity>
       </View>
 
-      <View style={styles.divider} />
-
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>QR Code</Text>
+      <View style={styles.content}>
         <View style={[styles.qrContainer, { backgroundColor: colors.containerBg, borderColor: colors.cardBorder }]}>
-          {qrUrl ? (
+          {qrLoading ? (
             <View style={styles.qrPlaceholder}>
-              <QrCode size={60} color={colors.accent} strokeWidth={1.5} />
-              <Text style={[styles.qrText, { color: colors.textTertiary }]}>QR Code Generated</Text>
+              <ActivityIndicator size="large" color={colors.accent} />
+              <Text style={[styles.qrText, { color: colors.textTertiary }]}>Generating QR...</Text>
             </View>
           ) : (
-            <View style={styles.qrPlaceholder}>
-              <Text style={[styles.qrText, { color: colors.textTertiary }]}>Generating...</Text>
-            </View>
+            <MotiView
+              from={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ type: 'spring', damping: 15 }}
+            >
+              <Image
+                source={{ uri: qrUrl }}
+                style={styles.qrImage}
+                resizeMode="contain"
+              />
+            </MotiView>
           )}
         </View>
-        <Text style={[styles.hint, { color: colors.textTertiary }]}>Share this QR code to let others access your profile</Text>
-      </View>
 
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Share Link</Text>
         <View style={[styles.linkContainer, { backgroundColor: colors.containerBg, borderColor: colors.cardBorder }]}>
-          <Text style={[styles.linkText, { color: colors.text }]} numberOfLines={1} ellipsizeMode="middle">
-            {shareLink}
+          <Text style={[styles.linkText, { color: colors.textSecondary }]} numberOfLines={1} ellipsizeMode="middle">
+            {shareLink || 'Generating link...'}
           </Text>
-          <TouchableOpacity onPress={handleCopyLink} style={[styles.copyButton, { backgroundColor: colors.accentLight }]}>
+          <TouchableOpacity onPress={handleCopyLink} style={[styles.iconButton, { backgroundColor: colors.accentLight }]}>
             {copied ? (
-              <Check size={18} color={colors.accent} strokeWidth={2} />
+              <Check size={16} color={colors.accent} strokeWidth={2} />
             ) : (
-              <Copy size={18} color={colors.accent} strokeWidth={2} />
+              <Copy size={16} color={colors.accent} strokeWidth={2} />
             )}
           </TouchableOpacity>
         </View>
-        <Text style={[styles.hint, { color: colors.textTertiary }]}>
-          {copied ? 'Link copied to clipboard!' : 'Tap copy to share the link'}
-        </Text>
+
+        {qrData && (
+          <Text style={[styles.expiryText, { color: colors.textTertiary }]}>
+            Valid for 7 days • Generated {new Date(qrData.createdAt).toLocaleDateString()}
+          </Text>
+        )}
       </View>
 
       <TouchableOpacity onPress={handleShare} style={styles.shareButton}>
@@ -106,7 +133,8 @@ export function ShareProfile({ patientId, patientName }: ShareProfileProps) {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          <Text style={styles.shareButtonText}>Share with Others</Text>
+          <Share2 size={18} color="#ffffff" strokeWidth={2} />
+          <Text style={styles.shareButtonText}>Share Profile</Text>
         </LinearGradient>
       </TouchableOpacity>
     </MotiView>
@@ -115,50 +143,37 @@ export function ShareProfile({ patientId, patientName }: ShareProfileProps) {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 24,
-    padding: 20,
+    borderRadius: 20,
+    padding: 16,
     borderWidth: 1,
-    marginBottom: 24,
+    marginBottom: 16,
   },
   header: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 12,
     marginBottom: 16,
   },
-  iconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
+  title: {
+    fontSize: 16,
+    fontFamily: 'Inter-Bold',
+  },
+  regenerateButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  title: {
-    fontSize: 18,
-    fontFamily: 'Inter-Bold',
-  },
-  divider: {
-    height: 1,
-    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-    marginVertical: 16,
-  },
-  section: {
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 13,
-    fontFamily: 'Inter-SemiBold',
-    marginBottom: 12,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+  content: {
+    gap: 12,
   },
   qrContainer: {
     borderRadius: 16,
     borderWidth: 1,
-    padding: 24,
+    padding: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 8,
     minHeight: 180,
   },
   qrPlaceholder: {
@@ -166,36 +181,40 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 12,
   },
+  qrImage: {
+    width: 150,
+    height: 150,
+  },
   qrText: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
   },
   linkContainer: {
     borderRadius: 12,
     borderWidth: 1,
     paddingHorizontal: 12,
-    paddingVertical: 12,
+    paddingVertical: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    gap: 8,
   },
   linkText: {
     flex: 1,
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: 'Inter-Regular',
-    marginRight: 8,
   },
-  copyButton: {
-    width: 36,
-    height: 36,
+  iconButton: {
+    width: 32,
+    height: 32,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  hint: {
-    fontSize: 12,
+  expiryText: {
+    fontSize: 11,
     fontFamily: 'Inter-Regular',
+    textAlign: 'center',
   },
   shareButton: {
     borderRadius: 12,
@@ -203,12 +222,14 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   shareButtonGradient: {
-    paddingVertical: 14,
+    paddingVertical: 12,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 8,
   },
   shareButtonText: {
-    fontSize: 15,
+    fontSize: 14,
     fontFamily: 'Inter-SemiBold',
     color: '#ffffff',
   },

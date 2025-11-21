@@ -61,10 +61,10 @@ export function DocumentTimeline({ documents, onUpload, onViewDocument }: Docume
         style={[styles.emptyCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
       >
         <View style={[styles.emptyContainer, { backgroundColor: colors.accentLight }]}>
-          <Upload size={48} color={colors.accent} strokeWidth={1.5} />
+          <Upload size={40} color={colors.accent} strokeWidth={1.5} />
           <Text style={[styles.emptyTitle, { color: colors.text }]}>No Documents Yet</Text>
           <Text style={[styles.emptySubtitle, { color: colors.textTertiary }]}>
-            Start uploading your medical documents to build your profile
+            Upload your medical documents
           </Text>
         </View>
 
@@ -75,8 +75,8 @@ export function DocumentTimeline({ documents, onUpload, onViewDocument }: Docume
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
           >
-            <Upload size={20} color="#ffffff" strokeWidth={2} />
-            <Text style={styles.uploadButtonText}>Upload First Document</Text>
+            <Upload size={18} color="#ffffff" strokeWidth={2} />
+            <Text style={styles.uploadButtonText}>Upload Document</Text>
           </LinearGradient>
         </TouchableOpacity>
       </MotiView>
@@ -92,11 +92,9 @@ export function DocumentTimeline({ documents, onUpload, onViewDocument }: Docume
         style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
       >
         <View style={styles.header}>
-          <Text style={[styles.title, { color: colors.text }]}>Medical Timeline</Text>
-          <Text style={[styles.count, { color: colors.textTertiary }]}>{documents.length} documents</Text>
+          <Text style={[styles.title, { color: colors.text }]}>Documents</Text>
+          <Text style={[styles.count, { color: colors.textTertiary }]}>{documents.length}</Text>
         </View>
-
-        <View style={styles.divider} />
 
         <View style={styles.timeline}>
           {sortedDocs.map((doc, index) => {
@@ -147,8 +145,6 @@ export function DocumentTimeline({ documents, onUpload, onViewDocument }: Docume
           })}
         </View>
 
-        <View style={styles.divider} />
-
         <TouchableOpacity onPress={onUpload} style={styles.addButton}>
           <LinearGradient
             colors={['rgba(99, 102, 241, 0.1)', 'rgba(129, 140, 248, 0.1)']}
@@ -156,8 +152,8 @@ export function DocumentTimeline({ documents, onUpload, onViewDocument }: Docume
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
           >
-            <Upload size={18} color={colors.accent} strokeWidth={2} />
-            <Text style={[styles.addButtonText, { color: colors.accent }]}>Add More Documents</Text>
+            <Upload size={16} color={colors.accent} strokeWidth={2} />
+            <Text style={[styles.addButtonText, { color: colors.accent }]}>Add Document</Text>
           </LinearGradient>
         </TouchableOpacity>
       </MotiView>
@@ -225,27 +221,27 @@ export function DocumentTimeline({ documents, onUpload, onViewDocument }: Docume
 
 const styles = StyleSheet.create({
   emptyCard: {
-    borderRadius: 24,
-    padding: 24,
+    borderRadius: 20,
+    padding: 16,
     borderWidth: 1,
-    marginBottom: 24,
+    marginBottom: 16,
     alignItems: 'center',
   },
   emptyContainer: {
     borderRadius: 16,
-    padding: 32,
+    padding: 24,
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   emptyTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: 'Inter-Bold',
-    marginTop: 16,
+    marginTop: 12,
   },
   emptySubtitle: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
-    marginTop: 8,
+    marginTop: 6,
     textAlign: 'center',
   },
   uploadButton: {
@@ -255,40 +251,40 @@ const styles = StyleSheet.create({
   },
   uploadButtonGradient: {
     flexDirection: 'row',
-    paddingVertical: 14,
+    paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
   },
   uploadButtonText: {
-    fontSize: 15,
+    fontSize: 14,
     fontFamily: 'Inter-SemiBold',
     color: '#ffffff',
   },
   card: {
-    borderRadius: 24,
-    padding: 20,
+    borderRadius: 20,
+    padding: 16,
     borderWidth: 1,
-    marginBottom: 24,
+    marginBottom: 16,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: 'Inter-Bold',
   },
   count: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
   },
   divider: {
     height: 1,
     backgroundColor: 'rgba(99, 102, 241, 0.1)',
-    marginVertical: 16,
+    marginVertical: 12,
   },
   timeline: {
     marginBottom: 0,

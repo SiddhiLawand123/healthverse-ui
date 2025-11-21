@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform, StatusBar } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { ArrowLeft, LogOut } from 'lucide-react-native';
@@ -78,21 +78,23 @@ export default function ProfileScreen() {
     <View style={[styles.container, { backgroundColor: colors.containerBg }]}>
       <LinearGradient colors={colors.background as any} style={styles.gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
 
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={[styles.headerButton, { backgroundColor: colors.accentLight }]}>
-            <ArrowLeft size={22} color={colors.accent} strokeWidth={2} />
-          </TouchableOpacity>
+      <View style={[styles.header, { paddingTop: Platform.OS === 'ios' ? 50 : (StatusBar.currentHeight || 0) + 10 }]}>
+        <TouchableOpacity onPress={() => router.back()} style={[styles.headerButton, { backgroundColor: colors.accentLight }]}>
+          <ArrowLeft size={22} color={colors.accent} strokeWidth={2} />
+        </TouchableOpacity>
 
-          <Text style={[styles.headerTitle, { color: colors.text }]}>My Profile</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>My Profile</Text>
 
-          <TouchableOpacity onPress={handleLogout} style={[styles.headerButton, { backgroundColor: colors.accentLight }]}>
-            <LogOut size={22} color={colors.accent} strokeWidth={2} />
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+        <TouchableOpacity onPress={handleLogout} style={[styles.headerButton, { backgroundColor: colors.accentLight }]}>
+          <LogOut size={22} color={colors.accent} strokeWidth={2} />
+        </TouchableOpacity>
+      </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+      >
         <ProfileCard data={patientData} onUpdate={handleUpdatePatient} />
 
         <ShareProfile patientId={patientData.id} patientName={patientData.name} />
@@ -116,15 +118,13 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
   },
-  safeArea: {
-    backgroundColor: 'transparent',
-  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+    backgroundColor: 'transparent',
   },
   headerButton: {
     width: 40,
@@ -134,15 +134,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: 'Inter-Bold',
   },
   scrollContent: {
-    paddingHorizontal: 24,
-    paddingTop: 16,
+    paddingHorizontal: 20,
+    paddingTop: 8,
     paddingBottom: 40,
   },
   spacing: {
-    height: 40,
+    height: 20,
   },
 });

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MotiView } from 'moti';
-import { Edit2, X, Check } from 'lucide-react-native';
+import { Edit2, X, Check, User, Calendar, Droplet, Phone, Mail, MapPin } from 'lucide-react-native';
 import { useTheme, lightTheme, darkTheme } from '../contexts/ThemeContext';
 
 interface PatientData {
@@ -54,44 +54,87 @@ export function ProfileCard({ data, onUpdate }: ProfileCardProps) {
         style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
       >
         <View style={styles.cardHeader}>
-          <View>
-            <Text style={[styles.name, { color: colors.text }]}>{data.name}</Text>
-            <Text style={[styles.info, { color: colors.textTertiary }]}>{age} years • {data.gender}</Text>
+          <View style={styles.avatarSection}>
+            <LinearGradient
+              colors={['#6366F1', '#818CF8']}
+              style={styles.avatar}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <User size={32} color="#ffffff" strokeWidth={2} />
+            </LinearGradient>
+            <View style={styles.nameSection}>
+              <Text style={[styles.name, { color: colors.text }]}>{data.name}</Text>
+              <Text style={[styles.subtitle, { color: colors.textTertiary }]}>{age} years • {data.gender}</Text>
+            </View>
           </View>
           <TouchableOpacity
             onPress={() => {
               setEditData(data);
               setEditMode(true);
             }}
-            style={[styles.editButton, { backgroundColor: colors.accentLight, borderColor: colors.accent }]}
+            style={[styles.editButton, { backgroundColor: colors.accentLight }]}
           >
             <Edit2 size={18} color={colors.accent} strokeWidth={2} />
           </TouchableOpacity>
         </View>
 
-        <View style={styles.divider} />
-
         <View style={styles.infoGrid}>
-          <View style={styles.infoItem}>
-            <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>DOB</Text>
-            <Text style={[styles.infoValue, { color: colors.text }]}>{data.dob}</Text>
+          <View style={styles.infoRow}>
+            <View style={[styles.iconBadge, { backgroundColor: colors.accentLight }]}>
+              <Calendar size={16} color={colors.accent} strokeWidth={2} />
+            </View>
+            <View style={styles.infoContent}>
+              <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Date of Birth</Text>
+              <Text style={[styles.infoValue, { color: colors.text }]}>{data.dob}</Text>
+            </View>
           </View>
+
           {data.bloodGroup && (
-            <View style={styles.infoItem}>
-              <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Blood Group</Text>
-              <Text style={[styles.infoValue, { color: colors.text }]}>{data.bloodGroup}</Text>
+            <View style={styles.infoRow}>
+              <View style={[styles.iconBadge, { backgroundColor: 'rgba(239, 68, 68, 0.1)' }]}>
+                <Droplet size={16} color="#EF4444" strokeWidth={2} />
+              </View>
+              <View style={styles.infoContent}>
+                <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Blood Group</Text>
+                <Text style={[styles.infoValue, { color: colors.text }]}>{data.bloodGroup}</Text>
+              </View>
             </View>
           )}
+
           {data.phone && (
-            <View style={styles.infoItem}>
-              <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Phone</Text>
-              <Text style={[styles.infoValue, { color: colors.text }]}>{data.phone}</Text>
+            <View style={styles.infoRow}>
+              <View style={[styles.iconBadge, { backgroundColor: 'rgba(16, 185, 129, 0.1)' }]}>
+                <Phone size={16} color="#10B981" strokeWidth={2} />
+              </View>
+              <View style={styles.infoContent}>
+                <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Phone</Text>
+                <Text style={[styles.infoValue, { color: colors.text }]}>{data.phone}</Text>
+              </View>
             </View>
           )}
+
           {data.email && (
-            <View style={styles.infoItem}>
-              <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Email</Text>
-              <Text style={[styles.infoValue, { color: colors.text }]}>{data.email}</Text>
+            <View style={styles.infoRow}>
+              <View style={[styles.iconBadge, { backgroundColor: 'rgba(245, 158, 11, 0.1)' }]}>
+                <Mail size={16} color="#F59E0B" strokeWidth={2} />
+              </View>
+              <View style={styles.infoContent}>
+                <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Email</Text>
+                <Text style={[styles.infoValue, { color: colors.text }]} numberOfLines={1}>{data.email}</Text>
+              </View>
+            </View>
+          )}
+
+          {data.address && (
+            <View style={styles.infoRow}>
+              <View style={[styles.iconBadge, { backgroundColor: colors.accentLight }]}>
+                <MapPin size={16} color={colors.accent} strokeWidth={2} />
+              </View>
+              <View style={styles.infoContent}>
+                <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Address</Text>
+                <Text style={[styles.infoValue, { color: colors.text }]} numberOfLines={2}>{data.address}</Text>
+              </View>
             </View>
           )}
         </View>
@@ -225,23 +268,39 @@ export function ProfileCard({ data, onUpdate }: ProfileCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 24,
-    padding: 20,
+    borderRadius: 20,
+    padding: 16,
     borderWidth: 1,
-    marginBottom: 24,
+    marginBottom: 16,
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     marginBottom: 16,
   },
-  name: {
-    fontSize: 22,
-    fontFamily: 'Inter-Bold',
-    marginBottom: 6,
+  avatarSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flex: 1,
   },
-  info: {
+  avatar: {
+    width: 56,
+    height: 56,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  nameSection: {
+    flex: 1,
+  },
+  name: {
+    fontSize: 18,
+    fontFamily: 'Inter-Bold',
+    marginBottom: 2,
+  },
+  subtitle: {
     fontSize: 13,
     fontFamily: 'Inter-Regular',
   },
@@ -251,28 +310,32 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-    marginVertical: 16,
   },
   infoGrid: {
+    gap: 10,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 12,
   },
-  infoItem: {
-    paddingVertical: 8,
+  iconBadge: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  infoContent: {
+    flex: 1,
   },
   infoLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: 'Inter-Medium',
-    marginBottom: 4,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    marginBottom: 2,
   },
   infoValue: {
-    fontSize: 15,
+    fontSize: 14,
     fontFamily: 'Inter-SemiBold',
   },
   modalOverlay: {
