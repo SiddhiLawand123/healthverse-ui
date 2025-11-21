@@ -1,25 +1,141 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MotiView } from 'moti';
-import { FlaskConical, FileText, Clock, CheckCircle2, Bell, Settings, Home, Search, Calendar, User, Sun, Moon } from 'lucide-react-native';
+import { FlaskConical, FileText, Clock, CheckCircle2, Bell, Settings, Home, Search, Calendar, User, Sun, Moon, ChevronDown, ChevronUp } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 import { useTheme, lightTheme, darkTheme } from '../../contexts/ThemeContext';
 
+type TestStatus = 'pending' | 'processing' | 'completed';
+type FilterType = 'pending' | 'completed' | 'all';
+
+interface TestRequest {
+  id: number;
+  patient: string;
+  patientId: string;
+  doctor: string;
+  hospital: string;
+  tests: string[];
+  doctorNote: string;
+  status: TestStatus;
+  timestamp: string;
+  uploadedReports: number;
+  priority: 'high' | 'normal';
+}
+
+const testRequestsData: TestRequest[] = [
+  {
+    id: 1,
+    patient: 'Robert Johnson',
+    patientId: 'P-101',
+    doctor: 'Dr. Mehta',
+    hospital: 'Yashwant Hospital, Pune',
+    tests: ['Complete Blood Count', 'Lipid Profile'],
+    doctorNote: 'Check anemia',
+    status: 'pending',
+    timestamp: '2 hours ago',
+    uploadedReports: 0,
+    priority: 'high',
+  },
+  {
+    id: 2,
+    patient: 'Linda Martinez',
+    patientId: 'P-102',
+    doctor: 'Dr. Sharma',
+    hospital: 'City Hospital, Mumbai',
+    tests: ['Lipid Profile'],
+    doctorNote: 'Regular checkup',
+    status: 'pending',
+    timestamp: '4 hours ago',
+    uploadedReports: 0,
+    priority: 'normal',
+  },
+  {
+    id: 3,
+    patient: 'David Wilson',
+    patientId: 'P-103',
+    doctor: 'Dr. Patel',
+    hospital: 'Apollo Hospital, Delhi',
+    tests: ['Thyroid Function Test'],
+    doctorNote: 'Follow-up test',
+    status: 'pending',
+    timestamp: '5 hours ago',
+    uploadedReports: 0,
+    priority: 'normal',
+  },
+  {
+    id: 4,
+    patient: 'Sarah Smith',
+    patientId: 'P-104',
+    doctor: 'Dr. Kumar',
+    hospital: 'Max Hospital, Bangalore',
+    tests: ['Blood Sugar', 'HbA1c'],
+    doctorNote: 'Diabetic patient monitoring',
+    status: 'completed',
+    timestamp: '8 hours ago',
+    uploadedReports: 2,
+    priority: 'normal',
+  },
+  {
+    id: 5,
+    patient: 'Michael Brown',
+    patientId: 'P-105',
+    doctor: 'Dr. Singh',
+    hospital: 'Fortis Hospital, Chennai',
+    tests: ['Liver Function Test'],
+    doctorNote: '',
+    status: 'completed',
+    timestamp: '10 hours ago',
+    uploadedReports: 1,
+    priority: 'normal',
+  },
+];
+
 export default function LabHomeScreen() {
+  const router = useRouter();
   const { isDark, toggleTheme } = useTheme();
   const colors = isDark ? darkTheme : lightTheme;
+  const [activeFilter, setActiveFilter] = useState<FilterType>('pending');
+  const [expandedCard, setExpandedCard] = useState<number | null>(null);
+  const [testRequests, setTestRequests] = useState<TestRequest[]>(testRequestsData);
+
+  const pendingCount = testRequests.filter(r => r.status === 'pending').length;
+  const completedCount = testRequests.filter(r => r.status === 'completed').length;
+  const totalCount = testRequests.length;
 
   const stats = [
-    { label: 'Pending Tests', value: '8', icon: Clock, color: '#f59e0b' },
-    { label: 'Completed', value: '24', icon: CheckCircle2, color: '#10b981' },
-    { label: 'Total Today', value: '32', icon: FlaskConical, color: '#3b82f6' },
+    { label: 'Pending Tests', value: pendingCount.toString(), icon: Clock, color: '#f59e0b', filter: 'pending' as FilterType },
+    { label: 'Completed', value: completedCount.toString(), icon: CheckCircle2, color: '#10b981', filter: 'completed' as FilterType },
+    { label: 'Total Today', value: totalCount.toString(), icon: FlaskConical, color: '#3b82f6', filter: 'all' as FilterType },
   ];
 
-  const pendingTests = [
-    { patient: 'Robert Johnson', test: 'Complete Blood Count', priority: 'high', time: '2 hours ago' },
-    { patient: 'Linda Martinez', test: 'Lipid Profile', priority: 'normal', time: '4 hours ago' },
-    { patient: 'David Wilson', test: 'Thyroid Function Test', priority: 'normal', time: '5 hours ago' },
-  ];
+  const filteredRequests = testRequests.filter(request => {
+    if (activeFilter === 'all') return true;
+    return request.status === activeFilter;
+  });
+
+  const getStatusBadge = (status: TestStatus) => {
+    const statusConfig = {
+      pending: { label: 'Pending', color: '#FFA500', emoji: '🟡' },
+      processing: { label: 'Processing', color: '#007BFF', emoji: '🔵' },
+      completed: { label: 'Completed', color: '#28A745', emoji: '🟢' },
+    };
+    return statusConfig[status];
+  };
+
+  const handleProcessRequest = (request: TestRequest) => {
+    router.push({
+      pathname: '/process-request',
+      params: {
+        requestId: request.id.toString(),
+        requestData: JSON.stringify(request),
+      },
+    });
+  };
+
+  const toggleCardExpansion = (id: number) => {
+    setExpandedCard(expandedCard === id ? null : id);
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.containerBg }]}>
@@ -61,20 +177,37 @@ export default function LabHomeScreen() {
         >
           {stats.map((stat, index) => {
             const Icon = stat.icon;
+            const isActive = activeFilter === stat.filter;
             return (
-              <MotiView
+              <TouchableOpacity
                 key={stat.label}
-                from={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 300 + index * 100, type: 'spring' }}
-                style={[styles.statCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
+                onPress={() => setActiveFilter(stat.filter)}
+                activeOpacity={0.7}
+                style={{ flex: 1 }}
               >
-                <View style={[styles.statIcon, { backgroundColor: `${stat.color}15` }]}>
-                  <Icon size={24} color={stat.color} strokeWidth={2} />
-                </View>
-                <Text style={[styles.statValue, { color: colors.text }]}>{stat.value}</Text>
-                <Text style={[styles.statLabel, { color: colors.textTertiary }]}>{stat.label}</Text>
-              </MotiView>
+                <MotiView
+                  from={{ opacity: 0, scale: 0.9 }}
+                  animate={{
+                    opacity: 1,
+                    scale: isActive ? 1.05 : 1,
+                  }}
+                  transition={{ delay: 300 + index * 100, type: 'spring' }}
+                  style={[
+                    styles.statCard,
+                    {
+                      backgroundColor: colors.cardBg,
+                      borderColor: isActive ? stat.color : colors.cardBorder,
+                      borderWidth: isActive ? 2 : 1,
+                    }
+                  ]}
+                >
+                  <View style={[styles.statIcon, { backgroundColor: `${stat.color}15` }]}>
+                    <Icon size={24} color={stat.color} strokeWidth={2} />
+                  </View>
+                  <Text style={[styles.statValue, { color: colors.text }]}>{stat.value}</Text>
+                  <Text style={[styles.statLabel, { color: colors.textTertiary }]}>{stat.label}</Text>
+                </MotiView>
+              </TouchableOpacity>
             );
           })}
         </MotiView>
@@ -86,43 +219,143 @@ export default function LabHomeScreen() {
           style={styles.section}
         >
           <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>Pending Test Reports</Text>
-            <TouchableOpacity>
-              <Text style={styles.sectionLink}>View All</Text>
-            </TouchableOpacity>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              {activeFilter === 'pending' ? 'Pending Test Reports' :
+               activeFilter === 'completed' ? 'Completed Reports' :
+               'All Test Reports'}
+            </Text>
+            <Text style={[styles.sectionCount, { color: colors.textSecondary }]}>
+              {filteredRequests.length}
+            </Text>
           </View>
 
-          {pendingTests.map((test, index) => (
-            <MotiView
-              key={index}
-              from={{ opacity: 0, translateX: -20 }}
-              animate={{ opacity: 1, translateX: 0 }}
-              transition={{ delay: 700 + index * 100, type: 'spring' }}
-              style={[styles.testCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
-            >
-              <View style={styles.testLeft}>
-                <View style={[
-                  styles.priorityIndicator,
-                  test.priority === 'high' ? styles.priorityHigh : styles.priorityNormal
-                ]} />
-                <View style={styles.testInfo}>
-                  <Text style={[styles.patientName, { color: colors.text }]}>{test.patient}</Text>
-                  <Text style={[styles.testName, { color: colors.textTertiary }]}>{test.test}</Text>
-                  <Text style={[styles.testTime, { color: colors.textSecondary }]}>{test.time}</Text>
-                </View>
-              </View>
-              <TouchableOpacity style={styles.processButton}>
-                <LinearGradient
-                  colors={['#f59e0b', '#d97706']}
-                  style={styles.processGradient}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
+          {filteredRequests.map((request, index) => {
+            const statusBadge = getStatusBadge(request.status);
+            const isExpanded = expandedCard === request.id;
+
+            return (
+              <MotiView
+                key={request.id}
+                from={{ opacity: 0, translateX: -20 }}
+                animate={{ opacity: 1, translateX: 0 }}
+                transition={{ delay: 700 + index * 100, type: 'spring' }}
+                style={[styles.testCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
+              >
+                <TouchableOpacity
+                  onPress={() => toggleCardExpansion(request.id)}
+                  style={styles.cardTouchable}
+                  activeOpacity={0.7}
                 >
-                  <Text style={styles.processText}>Process</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            </MotiView>
-          ))}
+                  <View style={styles.testLeft}>
+                    <View style={[
+                      styles.priorityIndicator,
+                      request.priority === 'high' ? styles.priorityHigh : styles.priorityNormal
+                    ]} />
+                    <View style={styles.testInfo}>
+                      <View style={styles.nameStatusRow}>
+                        <Text style={[styles.patientName, { color: colors.text }]}>
+                          {request.patient}
+                        </Text>
+                        <View style={[styles.statusBadge, { backgroundColor: `${statusBadge.color}20` }]}>
+                          <Text style={[styles.statusEmoji]}>{statusBadge.emoji}</Text>
+                          <Text style={[styles.statusText, { color: statusBadge.color }]}>
+                            {statusBadge.label}
+                          </Text>
+                        </View>
+                      </View>
+                      <Text style={[styles.testName, { color: colors.textTertiary }]}>
+                        {request.tests.join(', ')}
+                      </Text>
+                      <Text style={[styles.testTime, { color: colors.textSecondary }]}>
+                        {request.timestamp}
+                      </Text>
+
+                      {isExpanded && (
+                        <MotiView
+                          from={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          transition={{ type: 'timing', duration: 300 }}
+                          style={styles.expandedContent}
+                        >
+                          <View style={styles.expandedRow}>
+                            <Text style={[styles.expandedLabel, { color: colors.textTertiary }]}>Patient ID:</Text>
+                            <Text style={[styles.expandedValue, { color: colors.text }]}>{request.patientId}</Text>
+                          </View>
+                          <View style={styles.expandedRow}>
+                            <Text style={[styles.expandedLabel, { color: colors.textTertiary }]}>Doctor:</Text>
+                            <Text style={[styles.expandedValue, { color: colors.text }]}>{request.doctor}</Text>
+                          </View>
+                          <View style={styles.expandedRow}>
+                            <Text style={[styles.expandedLabel, { color: colors.textTertiary }]}>Hospital:</Text>
+                            <Text style={[styles.expandedValue, { color: colors.text }]}>{request.hospital}</Text>
+                          </View>
+                          <View style={styles.expandedRow}>
+                            <Text style={[styles.expandedLabel, { color: colors.textTertiary }]}>Tests:</Text>
+                            <Text style={[styles.expandedValue, { color: colors.text }]}>
+                              {request.tests.join(', ')}
+                            </Text>
+                          </View>
+                          {request.doctorNote && (
+                            <View style={styles.expandedRow}>
+                              <Text style={[styles.expandedLabel, { color: colors.textTertiary }]}>Note:</Text>
+                              <Text style={[styles.expandedValue, { color: colors.text }]}>
+                                "{request.doctorNote}"
+                              </Text>
+                            </View>
+                          )}
+                          {request.status === 'completed' && (
+                            <View style={styles.expandedRow}>
+                              <Text style={[styles.expandedLabel, { color: colors.textTertiary }]}>Reports:</Text>
+                              <Text style={[styles.expandedValue, { color: colors.text }]}>
+                                {request.uploadedReports} file(s) uploaded
+                              </Text>
+                            </View>
+                          )}
+                        </MotiView>
+                      )}
+                    </View>
+                    <View style={styles.expandIcon}>
+                      {isExpanded ? (
+                        <ChevronUp size={20} color={colors.textSecondary} strokeWidth={2} />
+                      ) : (
+                        <ChevronDown size={20} color={colors.textSecondary} strokeWidth={2} />
+                      )}
+                    </View>
+                  </View>
+                </TouchableOpacity>
+
+                {request.status === 'pending' ? (
+                  <TouchableOpacity
+                    style={styles.processButton}
+                    onPress={() => handleProcessRequest(request)}
+                  >
+                    <LinearGradient
+                      colors={['#f59e0b', '#d97706']}
+                      style={styles.processGradient}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                    >
+                      <Text style={styles.processText}>Process Request</Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity style={styles.viewButton}>
+                    <View style={[styles.viewButtonInner, { backgroundColor: colors.accentLight }]}>
+                      <Text style={[styles.viewButtonText, { color: colors.accent }]}>View Reports</Text>
+                    </View>
+                  </TouchableOpacity>
+                )}
+              </MotiView>
+            );
+          })}
+
+          {filteredRequests.length === 0 && (
+            <View style={[styles.emptyState, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+              <Text style={[styles.emptyText, { color: colors.textTertiary }]}>
+                No {activeFilter === 'all' ? '' : activeFilter} requests found
+              </Text>
+            </View>
+          )}
         </MotiView>
 
         <MotiView
@@ -287,10 +520,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Bold',
     color: '#1e293b',
   },
-  sectionLink: {
-    fontSize: 14,
+  sectionCount: {
+    fontSize: 16,
     fontFamily: 'Inter-SemiBold',
-    color: '#f59e0b',
+    color: '#64748b',
   },
   testCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.7)',
@@ -299,15 +532,16 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     borderColor: 'rgba(59, 130, 246, 0.1)',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  },
+  cardTouchable: {
+    flex: 1,
   },
   testLeft: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 12,
     flex: 1,
+    marginBottom: 12,
   },
   priorityIndicator: {
     width: 4,
@@ -324,11 +558,33 @@ const styles = StyleSheet.create({
   testInfo: {
     flex: 1,
   },
+  nameStatusRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 6,
+    gap: 8,
+  },
   patientName: {
     fontSize: 16,
     fontFamily: 'Inter-SemiBold',
     color: '#1e293b',
-    marginBottom: 4,
+    flex: 1,
+  },
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  statusEmoji: {
+    fontSize: 10,
+  },
+  statusText: {
+    fontSize: 11,
+    fontFamily: 'Inter-SemiBold',
   },
   testName: {
     fontSize: 14,
@@ -341,6 +597,32 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     color: '#64748b',
   },
+  expandIcon: {
+    marginLeft: 8,
+  },
+  expandedContent: {
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(59, 130, 246, 0.1)',
+    gap: 8,
+  },
+  expandedRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  expandedLabel: {
+    fontSize: 12,
+    fontFamily: 'Inter-Medium',
+    color: '#94a3b8',
+    width: 80,
+  },
+  expandedValue: {
+    fontSize: 12,
+    fontFamily: 'Inter-SemiBold',
+    color: '#1e293b',
+    flex: 1,
+  },
   processButton: {
     borderRadius: 12,
     overflow: 'hidden',
@@ -348,11 +630,38 @@ const styles = StyleSheet.create({
   processGradient: {
     paddingHorizontal: 16,
     paddingVertical: 10,
+    alignItems: 'center',
   },
   processText: {
     fontSize: 14,
     fontFamily: 'Inter-SemiBold',
     color: '#ffffff',
+  },
+  viewButton: {
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  viewButtonInner: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  viewButtonText: {
+    fontSize: 14,
+    fontFamily: 'Inter-SemiBold',
+  },
+  emptyState: {
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 16,
+    padding: 32,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.1)',
+  },
+  emptyText: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    color: '#94a3b8',
   },
   quickActions: {
     marginBottom: 32,

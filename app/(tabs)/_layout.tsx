@@ -18,6 +18,8 @@ export default function TabLayout() {
       <Tabs.Screen name="profile" />
       <Tabs.Screen name="doctor-home" />
       <Tabs.Screen name="lab-home" />
+      <Tabs.Screen name="process-request" />
+      <Tabs.Screen name="success-confirmation" />
     </Tabs>
   );
 }
